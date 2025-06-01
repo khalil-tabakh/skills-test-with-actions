@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Log pull request changed files through GitHub CLI
-    - run: gh pr view --json files
+      run: gh pr view --json files
