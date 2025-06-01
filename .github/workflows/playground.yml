@@ -18,4 +18,4 @@ jobs:
     - name: Log all pull request
       run: gh pr list
     - name: Log pull request changed files
-      run: gh pr view --json files
+      run: gh pr view 3 --json files
