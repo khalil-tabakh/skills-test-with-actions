@@ -20,5 +20,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Log all pull request
       run: gh pr list
-    - name: Log pull request changed files
+    - name: Log all changed files
+      run: h pr view $PR_NUMBER --json files --jq '[.files[].path]'
+    - name: Log all second segments
       run: gh pr view $PR_NUMBER --json files --jq '[.files[].path | split("/") | .[1]] | unique'
