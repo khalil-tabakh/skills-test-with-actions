@@ -21,4 +21,4 @@ jobs:
     - name: Log all pull request
       run: gh pr list
     - name: Log pull request changed files
-      run: gh pr view $PR_NUMBER --json files --jq [.files[].path | split("/") | .[1]]
+      run: gh pr view $PR_NUMBER --json files --jq [.files[].path | split('/') | .[1]]
