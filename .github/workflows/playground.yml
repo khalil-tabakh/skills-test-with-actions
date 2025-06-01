@@ -6,6 +6,9 @@ on:
     - main
   workflow_dispatch:
 
+env:
+  PR_NUMBER: ${{ github.event.number }}
+
 jobs:
   log:
     name: Logging
@@ -18,4 +21,4 @@ jobs:
     - name: Log all pull request
       run: gh pr list
     - name: Log pull request changed files
-      run: gh pr view 3 --json files
+      run: gh pr view $PR_NUMBER --json files
