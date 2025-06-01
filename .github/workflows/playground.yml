@@ -1,0 +1,14 @@
+name: Playground
+
+on:
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  log:
+    name: Logging
+    runs-on: ubuntu-latest
+    steps:
+    - name: Log pull request changed files through GitHub CLI
+    - run: gh pr view --json files
