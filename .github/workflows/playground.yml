@@ -10,10 +10,12 @@ jobs:
   log:
     name: Logging
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Log pull request changed files through GitHub CLI
-      env:
-        GH_TOKEN: ${{ github.token }}
+    - name: Log all pull request
+      run: gh pr list
+    - name: Log pull request changed files
       run: gh pr view --json files
