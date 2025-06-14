@@ -6,21 +6,46 @@ on:
     - main
   workflow_dispatch:
 
-env:
-  PR_NUMBER: ${{ github.event.number }}
-
 jobs:
   log:
     name: Logging
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Log all pull request
-      run: gh pr list
-    - name: Log all changed files
-      run: gh pr view $PR_NUMBER --json files --jq '[.files[].path]'
-    - name: Log all second segments
-      run: gh pr view $PR_NUMBER --json files --jq '[.files[].path | split("/") | .[1] | select(. != null)] | unique'
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Get affected projects from PR files
+      id: get_affected
+      run: |
+        affected=$(gh pr view "$PR_NUMBER" --json files --jq '[.files[].path | split("/") | .[1] | select(. != null)] | unique | join(" ")')
+        echo "$affected"
+        echo "affected=$affected" >> "$GITHUB_OUTPUT"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.number }}
+
+    - name: Get defined projects from angular.json
+      id: get_defined
+      run: |
+        defined=$(jq -r '.projects | to_entries | map(select(.value.architect.test != null)) | map(.key) | join(" ")' angular.json)
+        echo "$defined"
+        echo "defined=$defined" >> "$GITHUB_OUTPUT"
+
+    - name: Filter testable projects
+      id: filter_testable
+      run: |
+        testable=""
+        for project in ${{ steps.get_affected.outputs.affected }}; do
+          if echo "${{ steps.get_defined.outputs.defined }}" | grep -qx "$project"; then
+            testable="$testable $project"
+          fi
+        done
+        testable=$(echo "$testable" | xargs) # Trim whitespace
+        echo "$testable"
+        echo "testable=$testable" >> "$GITHUB_OUTPUT"
