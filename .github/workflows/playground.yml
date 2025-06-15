@@ -52,10 +52,12 @@ jobs:
         echo "$DEFINED"
         testable=""
         for project in "$AFFECTED"; do
+          echo "$project"
           if echo "$DEFINED" | grep -qx "$project"; then
             testable="$testable $project"
           fi
         done
+        echo "$testable"
         testable=$(echo "$testable" | xargs) # Trim whitespace
         echo "$testable"
         echo "testable=$testable" >> "$GITHUB_OUTPUT"
