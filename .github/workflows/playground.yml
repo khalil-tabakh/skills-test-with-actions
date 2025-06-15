@@ -51,7 +51,7 @@ jobs:
         echo "$AFFECTED"
         echo "$DEFINED"
         testable=""
-        for project in "$AFFECTED"; do
+        for project in $AFFECTED; do
           echo project "$project"
           if echo "$DEFINED" | grep -qx "$project"; then
             testable="$testable $project"
