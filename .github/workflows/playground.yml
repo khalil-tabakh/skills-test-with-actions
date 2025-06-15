@@ -31,9 +31,9 @@ jobs:
     - name: Get affected projects from PR files
       id: get_affected
       run: |
-        affected=$(gh pr view "$PR_NUMBER" --json files --jq '[.files[].path | split("/") | .[1] | select(. != null)] | unique | join(" ")')
-        echo "$affected"
-        echo "affected=$affected" >> "$GITHUB_OUTPUT"
+        affected=$(gh pr view $PR_NUMBER --json files --jq '[.files[].path | split("/") | .[1] | select(. != null)] | unique | join(" ")')
+        echo $affected
+        echo affected=$affected >> $GITHUB_OUTPUT
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr }}
@@ -42,25 +42,25 @@ jobs:
       id: get_defined
       run: |
         defined=$(jq -r '.projects | to_entries | map(select(.value.architect.test != null)) | map(.key) | join(" ")' angular.json)
-        echo "$defined"
-        echo "defined=$defined" >> "$GITHUB_OUTPUT"
+        echo $defined
+        echo defined=$defined >> $GITHUB_OUTPUT
 
     - name: Filter testable projects
       id: filter_testable
       run: |
-        echo "$AFFECTED"
-        echo "$DEFINED"
+        echo $AFFECTED
+        echo $DEFINED
         testable=""
         for project in $AFFECTED; do
-          echo project "$project"
-          if echo "$DEFINED" | grep -qx "$project"; then
+          echo project $project
+          if echo $DEFINED | grep -qx $project; then
             testable="$testable $project"
           fi
         done
-        echo testable "$testable"
-        testable=$(echo "$testable" | xargs) # Trim whitespace
-        echo trimmed "$testable"
-        echo "testable=$testable" >> "$GITHUB_OUTPUT"
+        echo testable $testable
+        testable=$(echo $testable | xargs) # Trim whitespace
+        echo trimmed $testable
+        echo testable=$testable >> $GITHUB_OUTPUT
       env:
         AFFECTED: ${{ steps.get_affected.outputs.affected }}
         DEFINED: ${{ steps.get_defined.outputs.defined }}
