@@ -52,14 +52,14 @@ jobs:
         echo "$DEFINED"
         testable=""
         for project in "$AFFECTED"; do
-          echo "$project"
+          echo project "$project"
           if echo "$DEFINED" | grep -qx "$project"; then
             testable="$testable $project"
           fi
         done
-        echo "$testable"
+        echo testable "$testable"
         testable=$(echo "$testable" | xargs) # Trim whitespace
-        echo "$testable"
+        echo trimmed "$testable"
         echo "testable=$testable" >> "$GITHUB_OUTPUT"
       env:
         AFFECTED: ${{ steps.get_affected.outputs.affected }}
