@@ -48,6 +48,8 @@ jobs:
     - name: Filter testable projects
       id: filter_testable
       run: |
+        echo "$AFFECTED"
+        echo "$DEFINED"
         testable=""
         for project in "$AFFECTED"; do
           if echo "$DEFINED" | grep -qx "$project"; then
