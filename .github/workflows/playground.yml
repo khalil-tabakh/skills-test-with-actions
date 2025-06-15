@@ -48,18 +48,14 @@ jobs:
     - name: Filter testable projects
       id: filter_testable
       run: |
-        echo $AFFECTED
-        echo $DEFINED
         testable=""
         for project in $AFFECTED; do
-          echo project $project
-          if echo $DEFINED | grep -qx $project; then
+          if [[ $DEFINED == *$project* ]]; then
             testable="$testable $project"
           fi
         done
-        echo testable $testable
         testable=$(echo $testable | xargs) # Trim whitespace
-        echo trimmed $testable
+        echo $testable
         echo testable=$testable >> $GITHUB_OUTPUT
       env:
         AFFECTED: ${{ steps.get_affected.outputs.affected }}
@@ -69,7 +65,7 @@ jobs:
       if: steps.filter_testable.outputs.testable != ''
       run: |
         fail=0
-        for project in "$TESTABLE"; do
+        for project in $TESTABLE; do
           echo "🧪 Running tests for $project"
         done
         exit $fail
