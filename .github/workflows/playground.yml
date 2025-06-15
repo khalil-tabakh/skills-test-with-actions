@@ -5,6 +5,11 @@ on:
     branches:
     - main
   workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request
+        type: number
+        required: true
 
 jobs:
   log:
@@ -13,12 +18,15 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 20
+
+    - name: Log Hello World
+      uses: ./.github/actions/log
 
     - name: Get affected projects from PR files
       id: get_affected
@@ -28,7 +36,7 @@ jobs:
         echo "affected=$affected" >> "$GITHUB_OUTPUT"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PR_NUMBER: ${{ github.event.number }}
+        PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr }}
 
     - name: Get defined projects from angular.json
       id: get_defined
@@ -41,11 +49,25 @@ jobs:
       id: filter_testable
       run: |
         testable=""
-        for project in ${{ steps.get_affected.outputs.affected }}; do
-          if echo "${{ steps.get_defined.outputs.defined }}" | grep -qx "$project"; then
+        for project in "$AFFECTED"; do
+          if echo "$DEFINED" | grep -qx "$project"; then
             testable="$testable $project"
           fi
         done
         testable=$(echo "$testable" | xargs) # Trim whitespace
         echo "$testable"
         echo "testable=$testable" >> "$GITHUB_OUTPUT"
+      env:
+        AFFECTED: ${{ steps.get_affected.outputs.affected }}
+        DEFINED: ${{ steps.get_defined.outputs.defined }}
+    
+    - name: Run tests for each testable project
+      if: steps.filter_testable.outputs.testable != ''
+      run: |
+        fail=0
+        for project in "$TESTABLE"; do
+          echo "🧪 Running tests for $project"
+        done
+        exit $fail
+      env:
+        TESTABLE: ${{ steps.filter_testable.outputs.testable }}

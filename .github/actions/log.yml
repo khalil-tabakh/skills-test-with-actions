@@ -1,0 +1,13 @@
+name: Setup node
+description: Install and cache dependencies
+
+runs:
+  using: "composite"
+  steps:
+  - name: Log Hello
+    run: echo Hello
+    shell: bash
+  
+  - name: Log World
+    run: echo World
+    shell: bash
