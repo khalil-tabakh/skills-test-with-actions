@@ -46,8 +46,7 @@ runs:
         .projects |
         to_entries |
         map(select(.value.architect[$target] != null)) |
-        map(.value.root) |
-        .[] |
+        [.value.root] |
         join(" ")' "$file")
       echo "$default"
       echo "$defined"
