@@ -1,68 +1,42 @@
-name: Playground
+name: CI
 
 on:
+  push:
+    branches:
+    - main
   pull_request:
     branches:
     - main
+
   workflow_dispatch:
     inputs:
       pr:
-        description: Pull request
+        description: Pull request number
         type: number
         required: true
 
 jobs:
-  log:
-    name: Logging
+  test:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    - name: Setup browser
+      uses: ./.github/actions/setup-browser
+
+    - name: Get testable projects
+      id: testable
+      uses: ./.github/actions/get-affected
       with:
-        node-version: 20
-
-    - name: Log Hello World
-      uses: ./.github/actions/log
-
-    - name: Get affected projects from PR files
-      id: get_affected
-      run: |
-        affected=$(gh pr view "$PR_NUMBER" --json files --jq '[.files[].path | split("/") | .[1] | select(. != null)] | unique | join(" ")')
-        echo "$affected"
-        echo "affected=$affected" >> "$GITHUB_OUTPUT"
+        architect: test
+        pr: $PR_number
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr }}
 
-    - name: Get defined projects from angular.json
-      id: get_defined
-      run: |
-        defined=$(jq -r '.projects | to_entries | map(select(.value.architect.test != null)) | map(.key) | join(" ")' angular.json)
-        echo "$defined"
-        echo "defined=$defined" >> "$GITHUB_OUTPUT"
-
-    - name: Filter testable projects
-      id: filter_testable
-      run: |
-        testable=""
-        for project in $AFFECTED; do
-          if [[ "$DEFINED" == *"$project"* ]]; then
-            testable="$testable $project"
-          fi
-        done
-        testable=$(echo $testable | xargs) # Trim whitespace
-        echo "$testable"
-        echo "testable=$testable" >> "$GITHUB_OUTPUT"
-      env:
-        AFFECTED: ${{ steps.get_affected.outputs.affected }}
-        DEFINED: ${{ steps.get_defined.outputs.defined }}
-    
     - name: Run tests for each testable project
-      if: steps.filter_testable.outputs.testable != ''
+      if: steps.testable.outputs.affected != ''
       run: |
         fail=0
         for project in $TESTABLE; do
@@ -70,4 +44,4 @@ jobs:
         done
         exit $fail
       env:
-        TESTABLE: ${{ steps.filter_testable.outputs.testable }}
+        TESTABLE: ${{ steps.testable.outputs.affected }}
