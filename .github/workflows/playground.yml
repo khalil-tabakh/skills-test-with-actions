@@ -23,9 +23,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup browser
-      uses: ./.github/actions/setup-browser
-
     - name: Get testable projects
       id: testable
       uses: ./.github/actions/get-affected

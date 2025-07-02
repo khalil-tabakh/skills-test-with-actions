@@ -29,7 +29,7 @@ runs:
   - name: Get affected projects from PR files
     id: get_affected
     run: |
-      affected=$(gh pr view "$PR" --json files --jq '[.files[].path] | join(" ")')
+      affected=$(gh pr view "$PR" --json files --jq '[.files[].path] | unique | join(" ")')
       echo "$affected"
       echo "affected=$affected" >> "$GITHUB_OUTPUT"
     env:
@@ -48,6 +48,7 @@ runs:
         map(select(.value.architect[$target] != null)) |
         map(.value.root) |
         join(" ")' "$file")
+      echo "$default"
       echo "$defined"
       echo "defined=$defined" >> "$GITHUB_OUTPUT"
     env:
