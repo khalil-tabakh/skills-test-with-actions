@@ -47,7 +47,7 @@ runs:
         to_entries |
         map(select(.value.architect[$target] != null)) |
         map(.value.root) |
-        .[]
+        .[] |
         join(" ")' "$file")
       echo "$default"
       echo "$defined"
