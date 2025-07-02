@@ -45,9 +45,7 @@ runs:
       defined=$(jq -r --arg target "$TARGET" '
         .projects |
         to_entries |
-        map(select(.value.architect[$target] != null)) |
-        [.value.root] |
-        join(" ")' "$file")
+        map(select(.value.architect[$target] != null))' "$file")
       echo "$default"
       echo "$defined"
       echo "defined=$defined" >> "$GITHUB_OUTPUT"
