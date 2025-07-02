@@ -59,7 +59,6 @@ runs:
   - name: Filter affected projects
     id: get_projects
     run: |
-      echo "Defined: $DEFINED"
       projects=""
       for project in $DEFINED; do
         if [[ "$AFFECTED" == *"$project"* ]]; then

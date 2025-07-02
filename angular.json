@@ -28,8 +28,8 @@
         },
         "range": {
             "projectType": "library",
-            "root": "projects/ngx-uic/range",
-            "sourceRoot": "projects/ngx-uic/range/src",
+            "root": "src/range",
+            "sourceRoot": "src/range/src",
             "prefix": "ngx",
             "architect": {
                 "test": {
@@ -44,8 +44,8 @@
         },
         "path1": {
             "projectType": "library",
-            "root": "projects/ngx-uic/path1",
-            "sourceRoot": "projects/ngx-uic/path1/src",
+            "root": "src/path1",
+            "sourceRoot": "src/path1/src",
             "prefix": "ngx",
             "architect": {
                 "test": {
