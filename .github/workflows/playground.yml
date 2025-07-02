@@ -30,8 +30,8 @@ jobs:
       id: testable
       uses: ./.github/actions/get-affected
       with:
-        architect: test
         pr: ${{ github.event.pull_request.number || github.event.inputs.pr }}
+        target: test
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run tests for each testable project
