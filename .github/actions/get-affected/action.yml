@@ -45,7 +45,7 @@ runs:
       defined=$(jq -r --arg target "$TARGET" '
         .projects |
         to_entries |
-        map(select(.value.architect[$target] != null))
+        map(select(.value.architect[$target] != null)) |
         map(.value.root) |
         join(" "),' "$file")
       echo "$default"
