@@ -11,6 +11,9 @@ inputs:
   target:
     description: Architect target
     required: true
+  token:
+    description: Github token
+    required: true
 
 outputs:
   affected:
@@ -30,7 +33,7 @@ runs:
       echo "$affected"
       echo "affected=$affected" >> "$GITHUB_OUTPUT"
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ inputs.token }}
       PR: ${{ inputs.pr }}
     shell: bash
 
